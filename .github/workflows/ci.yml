@@ -1,0 +1,90 @@
+name: CI - Integración Continua
+
+# Se ejecuta en cada push y en cada Pull Request hacia main o develop
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Cancela ejecuciones antiguas de la misma rama para no gastar minutos
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: Compilar, lint y pruebas
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: 1. Descargar el código
+        uses: actions/checkout@v4
+
+      - name: 2. Configurar Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: 3. Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install ruff pytest-cov
+
+      - name: 4. Compilar (verificar sintaxis y bytecode)
+        run: python -m compileall -q app tests
+
+      - name: 5. Lint con Ruff
+        run: ruff check --isolated --select E,F,W --line-length 120 app tests
+
+      - name: 6. Ejecutar pruebas con pytest y cobertura
+        run: |
+          pytest -v \
+            --junitxml=reports/junit.xml \
+            --cov=app \
+            --cov-report=term-missing \
+            --cov-report=xml:reports/coverage.xml \
+            --cov-report=html:reports/htmlcov
+
+      - name: 7. Generar reporte en el resumen de la ejecución
+        if: always()
+        run: |
+          {
+            echo "## Reporte de CI"
+            echo ""
+            echo "| Dato | Valor |"
+            echo "|------|-------|"
+            echo "| Rama | \`${{ github.ref_name }}\` |"
+            echo "| Commit | \`${GITHUB_SHA::7}\` |"
+            echo "| Evento | ${{ github.event_name }} |"
+            echo "| Autor | ${{ github.actor }} |"
+            if [ -f reports/junit.xml ]; then
+              python - <<'PY'
+          import xml.etree.ElementTree as ET
+          s = ET.parse("reports/junit.xml").getroot()
+          s = s if s.tag == "testsuite" else s.find("testsuite")
+          total, fail, err, skip = (int(s.get(k, 0)) for k in ("tests", "failures", "errors", "skipped"))
+          print(f"| Pruebas | {total} totales, {total - fail - err - skip} aprobadas, {fail + err} fallidas, {skip} omitidas |")
+          print(f"| Duración | {float(s.get('time', 0)):.2f} s |")
+          cov = ET.parse("reports/coverage.xml").getroot().get("line-rate")
+          if cov:
+              print(f"| Cobertura | {float(cov) * 100:.0f}% |")
+          PY
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 8. Publicar reportes como artefacto
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reportes-ci
+          path: reports/
+          if-no-files-found: warn
+          retention-days: 14
