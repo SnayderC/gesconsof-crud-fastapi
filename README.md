@@ -1,122 +1,69 @@
-# User Service API Example
+# gesconsof-crud-fastapi
 
-## Overview
+## Sobre este repositorio
+Snayder Cedeño
+Domeniza Piza
+Steven Barona
+Kevin Barboza 
+Brayan Mosquera
+Christopher Aguiño
 
-This is a simple User Service CRUD (Create, Read, Update, Delete) API built with FastAPI and SQLite. The API allows you to create, read, update, and delete users. It uses Pydantic models for request and response validation and SQLAlchemy for database operations.
+## Proyecto base
+Basado en: https://github.com/Pytest-with-Eric/pytest-fastapi-crud-example
 
-## Architecture
-This project follows a clean architecture pattern, separating concerns to enhance maintainability and scalability. Here's a brief overview:
+## Requisitos
+- Python 3.12.10 (instalador `.exe` de python.org)
+- Git
 
-- API Layer (FastAPI): Handles HTTP requests and responses, routing, and interaction with the service layer.
-- Service Layer: Contains business logic and communicates with the database layer.
-- Database Layer (SQLite): Manages data persistence and database operations.
-- Testing: Unit tests are written in Pytest to test the service layer functions.
+[Escribe aquí en una frase qué pasa si se usa Python 3.14]
 
-## Getting Started
+## Instalación (Windows con Git Bash)
 
-### Prerequisites and Dependencies
-- Python 3.12
-- FastAPI
-- SQLite
-- Uvicorn (for running the server)
-
-#### Poetry
-
-This project uses [Poetry](https://python-poetry.org/) for dependency management. 
-
-If you're not familiar with Poetry, please follow [these instructions](https://python-poetry.org/docs/#installation) to install it.
-
-Once you've installed Poetry, you can install the dependencies using the following command:
-
-```shell
-$ poetry install
+```bash
+git clone https://github.com/SnayderC/gesconsof-crud-fastapi.git
+cd gesconsof-crud-fastapi
+/c/Users/TU_USUARIO/AppData/Local/Programs/Python/Python312/python.exe -m venv venv
+source venv/Scripts/activate
+python --version
+pip install -r requirements.txt
+pytest -v
 ```
 
-Then run the below command to activate the virtual environment.
+Para levantar la API:
 
-```shell
-$ poetry shell
+```bash
+uvicorn app.main:app --reload
 ```
 
-#### Pip
+Documentación interactiva: http://localhost:8000/docs
 
-If you prefer using `pip`, you can create a virtual environment and then install the dependencies using the following command:
+## Reglas de colaboración
+- Ramas `main` y `develop` protegidas: no se permite push directo.
+- Nombres de ramas: `feature/descripcion-corta` para mejoras, `fix/descripcion-corta` para errores, `docs/descripcion-corta` para documentación.
+- Todo Pull Request va hacia `develop` y requiere 1 aprobación de otro integrante.
+- `main` solo recibe cambios desde `develop` al publicar un release.
+- Los commits siguen la política definida por el grupo (ver sección de commits).
 
-```shell
-$ pip install -r requirements.txt
-```
+---
 
-## How To Run the Server
+# Changelog
 
-To run the server, use the following command:
+Todos los cambios relevantes de este proyecto se documentan en este archivo.
+El formato sigue Keep a Changelog y el versionado sigue Semantic Versioning.
 
-```shell
-$ uvicorn app.main:app --host localhost --port 8000 --reload
-```
+## [1.0.0] - 2026-10-04
 
-This will spin up the server at `http://localhost:8000` with a local SQLite database `users.db`.
+### Added
+- API REST CRUD de gestión de usuarios (FastAPI) en /api/users/.
+- Suite de 8 pruebas unitarias con pytest (cobertura del 82%).
+- Estrategia de ramas: main, develop, feature/*, fix/*, docs/*.
+- Reglas de protección en main y develop (PR obligatorio y 1 aprobación).
+- Documento de reglas de colaboración y crédito al proyecto original.
+- Política de commits (docs/politica-commits.md).
+- Pipeline de integración continua con GitHub Actions (.github/workflows/ci.yml): compilación, lint con Ruff, pruebas con pytest, reporte y artefacto reportes-ci.
 
-## API Endpoints
+### Changed
+- El flujo de trabajo pasa de modificar main directamente a Pull Requests con revisión.
 
-### Create User
-
-- `POST /api/users/`: Create a new user.
-
-To create a user, send a POST request to `http://localhost:8000/api/users` with the following JSON payload:
-
-```json
-{
-    "first_name": "John",
-    "last_name": "Doe",
-    "address": "123 Fake St",
-    "activated": true
-}
-```
-
-As we use Pydantic models, the API will validate the request payload and return an error if the payload is invalid.
-
-### Get Users
-
-- `GET /api/users/`: Get all users.
-
-To get all users, send a GET request to `http://localhost:8000/api/users`.
-
-### Get User by ID
-
-- `GET /api/users/{userId}/`: Get a user by ID.
-
-To get a user by ID, send a GET request to `http://localhost:8000/api/users/{userId}`. 
-
-If the user with the specified ID does not exist, the API will return a 404 Not Found response. The same logic is carried out for the Update and Delete endpoints.
-
-
-### Update User
-
-- `PATCH /api/users/{userId}/`: Update a user by ID.
-
-To update a user by ID, send a PATCH request to `http://localhost:8000/api/users/{userId}` with the following JSON payload:
-
-```json
-{
-    "first_name": "Jane",
-    "last_name": "Doe",
-    "address": "321 Fake St",
-    "activated": true
-}
-```
-
-### Delete User
-
-- `DELETE /api/users/{userId}/`: Delete a user by ID.
-
-To delete a user by ID, send a DELETE request to `http://localhost:8000/api/users/{userId}`.
-
-## How To Run the Unit Tests
-To run the Unit Tests, from the root of the repo run
-```shell
-$ pytest 
-```
-
-This will spin up a test database in SQLite `test_db.db`, run the tests and then tear down the database. 
-
-You can use `pytest -v` for verbose output and `pytest -s` to disable output capture for better debugging.
+### Fixed
+- Sin correcciones en esta versión.
