@@ -45,3 +45,25 @@ Documentación interactiva: http://localhost:8000/docs
 - Los commits siguen la política definida por el grupo (ver sección de commits).
 
 ---
+
+# Changelog
+
+Todos los cambios relevantes de este proyecto se documentan en este archivo.
+El formato sigue Keep a Changelog y el versionado sigue Semantic Versioning.
+
+## [1.0.0] - 2026-10-04
+
+### Added
+- API REST CRUD de gestión de usuarios (FastAPI) en /api/users/.
+- Suite de 8 pruebas unitarias con pytest (cobertura del 82%).
+- Estrategia de ramas: main, develop, feature/*, fix/*, docs/*.
+- Reglas de protección en main y develop (PR obligatorio y 1 aprobación).
+- Documento de reglas de colaboración y crédito al proyecto original.
+- Política de commits (docs/politica-commits.md).
+- Pipeline de integración continua con GitHub Actions (.github/workflows/ci.yml): compilación, lint con Ruff, pruebas con pytest, reporte y artefacto reportes-ci.
+
+### Changed
+- El flujo de trabajo pasa de modificar main directamente a Pull Requests con revisión.
+
+### Fixed
+- Sin correcciones en esta versión.
