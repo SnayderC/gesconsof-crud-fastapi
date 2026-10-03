@@ -1,0 +1,53 @@
+name: CI - FastAPI
+
+on:
+  push:
+    branches:
+      - principal
+      - develop
+  pull_request:
+    branches:
+      - principal
+      - develop
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requisitos.txt
+
+      - name: Instalar herramientas de calidad
+        run: |
+          pip install flake8 pytest
+
+      - name: Lint
+        run: |
+          flake8 aplicación pruebas --exclude=__pycache__
+
+      - name: Ejecutar pruebas
+        run: |
+          pytest -v
+
+      - name: Generar reporte
+        if: always()
+        run: |
+          pytest --junitxml=report.xml
+
+      - name: Guardar reporte
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-pruebas
+          path: report.xml
